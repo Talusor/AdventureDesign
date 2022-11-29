@@ -4,34 +4,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import kr.cnu.ai.lth.adventuredesign.Shelter.Shelter;
-import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterAdapter;
+import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterFragment;
 
 public class MainActivity extends AppCompatActivity {
     Manager manager = Manager.getInstance();

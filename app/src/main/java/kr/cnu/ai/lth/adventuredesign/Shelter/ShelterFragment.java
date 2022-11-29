@@ -1,4 +1,4 @@
-package kr.cnu.ai.lth.adventuredesign;
+package kr.cnu.ai.lth.adventuredesign.Shelter;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +17,8 @@ import android.widget.ProgressBar;
 import java.net.URLEncoder;
 import java.util.List;
 
+import kr.cnu.ai.lth.adventuredesign.Manager;
+import kr.cnu.ai.lth.adventuredesign.R;
 import kr.cnu.ai.lth.adventuredesign.Shelter.Shelter;
 import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterAdapter;
 
