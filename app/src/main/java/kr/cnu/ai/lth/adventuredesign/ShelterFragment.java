@@ -35,6 +35,7 @@ public class ShelterFragment extends Fragment {
         handler = new Handler();
 
         loading = view.findViewById(R.id.LoadingBar);
+        loading.setVisibility(View.INVISIBLE);
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -78,14 +79,14 @@ public class ShelterFragment extends Fragment {
                 Thread.sleep(2500);
             } catch (Exception ignored) {}
 
+            adapter.clearData();
+            adapter.addData(data);
+
             handler.post(() -> {
                 recyclerView.setVisibility(View.VISIBLE);
                 loading.setVisibility(View.INVISIBLE);
+                adapter.notifyDataSetChanged();
             });
-
-            adapter.clearData();
-            adapter.addData(data);
-            adapter.notifyDataSetChanged();
         }).start();
     }
 }
