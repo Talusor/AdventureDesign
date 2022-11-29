@@ -19,6 +19,7 @@ import com.gun0912.tedpermission.normal.TedPermission;
 
 import java.util.List;
 
+import kr.cnu.ai.lth.adventuredesign.History.HistoryFragment;
 import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     FragmentManager fm;
     ShelterFragment shelterFragment;
+    HistoryFragment historyFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
         fm = getSupportFragmentManager();
         shelterFragment = new ShelterFragment();
+        historyFragment = new HistoryFragment();
         ChangeView(0);
 
         LinearLayout shelterButton = findViewById(R.id.shelterButton);
+        LinearLayout historyButton = findViewById(R.id.historyButton);
         shelterButton.setOnClickListener(v -> btnClick());
+        historyButton.setOnClickListener(v -> btnClick2());
     }
 
     private void checkPermission(Runnable r) {
@@ -78,15 +83,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void btnClick2() {
+        ChangeView(1);
+        historyFragment.Test();
+    }
+
     private void ChangeView(int ID) {
         FragmentTransaction ft = fm.beginTransaction();
 
         switch (ID) {
             case 1:
-                ft.replace(R.id.frameView, shelterFragment).commitAllowingStateLoss();
+                ft.replace(R.id.frameView, historyFragment).commitNowAllowingStateLoss();
                 break;
             default:
-                ft.replace(R.id.frameView, shelterFragment).commitAllowingStateLoss();
+                ft.replace(R.id.frameView, shelterFragment).commitNowAllowingStateLoss();
                 break;
         }
     }
