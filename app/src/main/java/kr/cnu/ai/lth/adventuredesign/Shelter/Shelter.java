@@ -1,4 +1,4 @@
-package kr.cnu.ai.lth.adventuredesign;
+package kr.cnu.ai.lth.adventuredesign.Shelter;
 
 public class Shelter {
     final private String mName;

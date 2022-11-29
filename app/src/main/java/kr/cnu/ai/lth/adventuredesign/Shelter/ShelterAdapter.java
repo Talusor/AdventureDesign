@@ -1,4 +1,4 @@
-package kr.cnu.ai.lth.adventuredesign;
+package kr.cnu.ai.lth.adventuredesign.Shelter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import kr.cnu.ai.lth.adventuredesign.R;
 
 public class ShelterAdapter extends RecyclerView.Adapter<ShelterAdapter.ShelterViewHolder> implements OnShelterItemClickListener{
     List<Shelter> data = new ArrayList<>();
@@ -55,7 +57,7 @@ public class ShelterAdapter extends RecyclerView.Adapter<ShelterAdapter.ShelterV
         return data.size();
     }
 
-    static class ShelterViewHolder extends RecyclerView.ViewHolder {
+    public static class ShelterViewHolder extends RecyclerView.ViewHolder {
         private final TextView NameText;
         private final TextView DistanceText;
         private final TextView ParkingText;

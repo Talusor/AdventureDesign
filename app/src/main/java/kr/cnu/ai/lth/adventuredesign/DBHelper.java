@@ -8,7 +8,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import kr.cnu.ai.lth.adventuredesign.Shelter.Shelter;
+
 public class DBHelper extends SQLiteOpenHelper {
+
+    public DBHelper(Context context, String name) {
+        super(context, name, null, 1);
+    }
 
     public DBHelper(Context context) {
         super(context, context.getFilesDir().getAbsolutePath() + "/shelter.db", null, 1);
