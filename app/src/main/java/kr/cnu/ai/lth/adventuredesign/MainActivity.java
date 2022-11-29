@@ -79,6 +79,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void btnClick() {
         ChangeView(0);
+        checkPermission(() -> {
+            LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (loc != null) {
+                double lat = loc.getLatitude();
+                double lng = loc.getLongitude();
+                shelterFragment.RefreshShelters(lat, lng, 10);
+            }
+        });
     }
 
     private void ChangeView(int ID) {
@@ -86,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
 
         switch (ID) {
             case 1:
-                ft.replace(R.id.frameView, shelterFragment);
+                ft.replace(R.id.frameView, shelterFragment).commitAllowingStateLoss();
                 break;
             default:
-                ft.replace(R.id.frameView, shelterFragment);
+                ft.replace(R.id.frameView, shelterFragment).commitAllowingStateLoss();
                 break;
         }
     }
