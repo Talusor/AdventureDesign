@@ -10,6 +10,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/topAppBarLayout"
+        android:background="@color/design_default_color_primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

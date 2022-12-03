@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 
@@ -48,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(manager.TAG, e.getMessage());
         }
+
+        MaterialToolbar toolbar = findViewById(R.id.topAppBar);
+
+        toolbar.setNavigationOnClickListener(v -> {
+
+        });
 
         fm = getSupportFragmentManager();
         shelterFragment = new ShelterFragment();
