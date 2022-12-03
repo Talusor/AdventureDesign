@@ -77,10 +77,23 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
                     data.getCntOfDetect()
             ));
 
-            DurationText.setText(String.format(
-                    "%d min",
-                    data.getDuration()
-            ));
+            if (data.getDuration() < 60) {
+                DurationText.setText(String.format(
+                        "%d s",
+                        data.getDuration()
+                ));
+            } else if (data.getDuration() < 3600) {
+                DurationText.setText(String.format(
+                        "%d min",
+                        data.getDuration() / 60
+                ));
+            } else {
+                DurationText.setText(String.format(
+                        "%dh %d min",
+                        data.getDuration() / 60,
+                        data.getDuration() % 60
+                ));
+            }
 
             if (data.getCntOfDetect() >= 3) {
                 HistoryIcon.setImageTintList(ColorStateList.valueOf(Color.RED));

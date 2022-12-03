@@ -122,7 +122,7 @@ public class Manager {
         return historyDbHelper.getHistories(year, month);
     }
 
-    public synchronized long insertHistory(int detectCnt, int duration) {
+    public synchronized long insertHistory(int detectCnt, long duration) {
         return historyDbHelper.insertHistory(detectCnt, duration);
     }
 }

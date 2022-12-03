@@ -15,6 +15,7 @@ public class History {
         return mCntOfDetect;
     }
 
+    // Seconds
     public int getDuration() {
         return mDuration;
     }

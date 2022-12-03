@@ -35,7 +35,7 @@ public class HistoryDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public long insertHistory(int detectCnt, int duration) {
+    public long insertHistory(int detectCnt, long duration) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("DETECT_COUNT", detectCnt);

@@ -50,6 +50,12 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.CAMERA},
                 10);
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                11);
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.RECORD_AUDIO},
+                12);
 
         if (mAuth.getCurrentUser() == null) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -73,11 +79,16 @@ public class MainActivity extends AppCompatActivity {
 
         navView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
+                case R.id.home:
+                    drawerLayout.closeDrawer(navView);
+                    break;
                 case R.id.logout:
                     mAuth.signOut();
                     Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
                     finish();
+                    break;
+                case R.id.setting:
                     break;
             }
 
@@ -103,7 +114,9 @@ public class MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         new Handler().post(() -> {
-                            ((TextView) navView.getHeaderView(0).findViewById(R.id.headerID)).setText(Objects.requireNonNull(task.getResult().get("name")).toString());
+                            if (task.getResult().get("name") != null) {
+                                ((TextView) navView.getHeaderView(0).findViewById(R.id.headerID)).setText(task.getResult().get("name").toString());
+                            }
                         });
                     }
                 });
@@ -152,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Log.d(manager.TAG, "Started Date : " + manager.getStartDate().toString());
                 Log.d(manager.TAG, "End Date : " + manager.getEndDate().toString());
+
+                manager.insertHistory(0, (manager.getEndDate().getTime() - manager.getStartDate().getTime()) / 1000);
             }).start();
         } else {
             startForegroundService(intent);
