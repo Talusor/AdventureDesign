@@ -49,27 +49,8 @@ public class HistoryFragment extends Fragment {
                 loading.setVisibility(View.VISIBLE);
             });
 
-            try {
-                Thread.sleep(2500);
-            } catch (Exception ignored) {
-            }
-
             adapter.ClearData();
-            adapter.AddData(new History(
-                    new Date(),
-                    0,
-                    10
-            ));
-            adapter.AddData(new History(
-                    new Date(),
-                    1,
-                    42
-            ));
-            adapter.AddData(new History(
-                    new Date(),
-                    3,
-                    240
-            ));
+            adapter.AddData(manager.getHistories(new Date()));
 
             handler.post(() -> {
                 recyclerView.setVisibility(View.VISIBLE);

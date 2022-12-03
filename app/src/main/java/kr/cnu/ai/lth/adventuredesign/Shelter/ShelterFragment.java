@@ -77,10 +77,6 @@ public class ShelterFragment extends Fragment {
             });
             List<Shelter> data = manager.getClosestShelters(lat, lng, limit);
 
-            try {
-                Thread.sleep(2500);
-            } catch (Exception ignored) {}
-
             adapter.clearData();
             adapter.addData(data);
 
