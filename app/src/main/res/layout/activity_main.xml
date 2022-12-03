@@ -8,14 +8,30 @@
     tools:context=".MainActivity"
     tools:ignore="HardcodedText,SmallSp,ContentDescription">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/topAppBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Don't Sleep!"
+            app:menu="@menu/title_bar"
+            app:navigationIcon="@drawable/ic_menu" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="32dp"
         android:layout_marginBottom="48dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:cardCornerRadius="8dp"
+        android:layout_below="@id/topAppBarLayout"
         android:layout_above="@+id/bottomNav">
 
         <FrameLayout
