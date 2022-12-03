@@ -1,39 +1,25 @@
 package kr.cnu.ai.lth.adventuredesign;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.Manifest;
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.normal.TedPermission;
-
-import java.util.List;
-import java.util.Random;
 
 import kr.cnu.ai.lth.adventuredesign.History.HistoryFragment;
 import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterFragment;
@@ -98,9 +84,11 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout shelterButton = findViewById(R.id.shelterButton);
         LinearLayout historyButton = findViewById(R.id.historyButton);
         startButton = findViewById(R.id.startButton);
-        shelterButton.setOnClickListener(v -> btnClick());
-        historyButton.setOnClickListener(v -> btnClick2());
-        startButton.setOnClickListener(v -> btnClick3());
+
+        shelterButton.setOnClickListener(v -> viewShelterList());
+        historyButton.setOnClickListener(v -> viewHistoryList());
+        startButton.setOnClickListener(v -> startDrive());
+
         updateButton();
 
         db.collection("user").document(mAuth.getUid()).get()
@@ -130,36 +118,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void checkPermission(Runnable r) {
-        TedPermission.create()
-                .setPermissionListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted() {
-                        r.run();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(List<String> deniedPermissions) {
-                        Toast.makeText(getApplicationContext(), "권한 거부됨.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setDeniedMessage("권한 거부됨.")
-                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-                .check();
-    }
-
-    public void btnClick() {
+    public void viewShelterList() {
         ChangeView(0);
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         shelterFragment.RefreshShelters(10, locationManager);
     }
 
-    public void btnClick2() {
+    public void viewHistoryList() {
         ChangeView(1);
         historyFragment.Test();
     }
 
-    public void btnClick3() {
+    public void startDrive() {
         //manager.insertHistory(rnd.nextInt(10) + 1, rnd.nextInt(265) + 20);
         Intent intent = new Intent(this, DuringDrive.class);
         if (startButton.getText().toString().equals("운전 종료")) {
