@@ -118,8 +118,8 @@ public class Manager {
         return sortedData;
     }
 
-    public synchronized List<History> getHistories(Date target) {
-        return historyDbHelper.getHistories(1900 + target.getYear(), 1 + target.getMonth());
+    public synchronized List<History> getHistories(int year, int month) {
+        return historyDbHelper.getHistories(year, month);
     }
 
     public synchronized long insertHistory(int detectCnt, int duration) {

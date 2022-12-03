@@ -126,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void viewHistoryList() {
         ChangeView(1);
-        historyFragment.Test();
     }
 
     public void startDrive() {
