@@ -1,7 +1,10 @@
 package kr.cnu.ai.lth.adventuredesign;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -14,11 +17,15 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 
@@ -30,19 +37,26 @@ import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterFragment;
 
 public class MainActivity extends AppCompatActivity {
     Manager manager = Manager.getInstance();
-    Random rnd = new Random();
 
     FragmentManager fm;
     ShelterFragment shelterFragment;
     HistoryFragment historyFragment;
 
     Button startButton;
+    DrawerLayout drawerLayout;
+    NavigationView navView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         try {
             manager.LoadDB(this);
@@ -51,9 +65,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         MaterialToolbar toolbar = findViewById(R.id.topAppBar);
+        drawerLayout = findViewById(R.id.rootLayout);
+        navView = findViewById(R.id.nav_view);
+        ((TextView)navView.getHeaderView(0).findViewById(R.id.headerID)).setText("");
 
         toolbar.setNavigationOnClickListener(v -> {
+            drawerLayout.openDrawer(navView);
+        });
 
+        navView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId())
+            {
+                case R.id.logout:
+                    FirebaseAuth.getInstance().signOut();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                    break;
+            }
+
+            return false;
         });
 
         fm = getSupportFragmentManager();
@@ -68,6 +99,15 @@ public class MainActivity extends AppCompatActivity {
         historyButton.setOnClickListener(v -> btnClick2());
         startButton.setOnClickListener(v -> btnClick3());
         updateButton();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(navView)) {
+            drawerLayout.closeDrawer(navView);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void updateButton() {

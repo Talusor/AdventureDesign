@@ -62,33 +62,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void SignUp() {
-        String email = emailText.getText().toString();
-        String password = passwordText.getText().toString();
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "이메일 형식을 확인해주세요.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if (password.length() < 5) {
-            Toast.makeText(this, "비밀번호는 6자 이상이어야 합니다.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        Log.d(Manager.getInstance().TAG, "createUserWithEmail:success");
-                    } else {
-                        Log.d(Manager.getInstance().TAG, "createUserWithEmail:failure");
-                        try {
-                            throw task.getException();
-                        } catch (FirebaseAuthUserCollisionException e) {
-                            Toast.makeText(this, "이미 존재하는 이메일입니다.", Toast.LENGTH_LONG).show();
-                        } catch (Exception e) {
-                            Toast.makeText(this, "회원가입에 실패했습니다.", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+        Intent intent = new Intent(this, SingUpActivity.class);
+        startActivity(intent);
     }
 }
