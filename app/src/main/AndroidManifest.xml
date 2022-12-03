@@ -9,8 +9,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -22,6 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AdventureDesign"
         tools:targetApi="31">
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false" />
         <activity
             android:name=".SingUpActivity"
             android:exported="false" />
@@ -38,8 +44,7 @@
         <service
             android:name=".DuringDrive"
             android:enabled="true"
-            android:foregroundServiceType="camera|location"
-            />
+            android:foregroundServiceType="camera|location" />
 
         <activity
             android:name=".MainActivity"
