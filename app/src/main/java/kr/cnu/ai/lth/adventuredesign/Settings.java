@@ -10,7 +10,7 @@ public class Settings {
     private int mAlarmVolume;
 
     public Settings() {
-        mVentMsg = "";
+        mVentMsg = "%N분마다 환기를 권장합니다.";
         mVentType = VentType.WITH_SOUND;
         mAlarmUri = R.raw.shelter;
         mAlarmVolume = 100;
