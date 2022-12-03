@@ -2,10 +2,12 @@ package kr.cnu.ai.lth.adventuredesign;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
@@ -20,6 +22,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
 
 import kr.cnu.ai.lth.adventuredesign.History.HistoryFragment;
 import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterFragment;
@@ -42,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA},
+                10);
 
         if (mAuth.getCurrentUser() == null) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -95,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         new Handler().post(() -> {
-                            ((TextView) navView.getHeaderView(0).findViewById(R.id.headerID)).setText(task.getResult().get("name").toString());
+                            ((TextView) navView.getHeaderView(0).findViewById(R.id.headerID)).setText(Objects.requireNonNull(task.getResult().get("name")).toString());
                         });
                     }
                 });
@@ -148,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startForegroundService(intent);
         }
-        new Handler().postDelayed(this::updateButton, 100);
+        new Handler().postDelayed(this::updateButton, 250);
     }
 
     private void ChangeView(int ID) {
