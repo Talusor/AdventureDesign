@@ -4,7 +4,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.normal.TedPermission;
 
 import java.net.URLEncoder;
 import java.util.List;
@@ -69,22 +76,46 @@ public class ShelterFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    public void RefreshShelters(double lat, double lng, int limit) {
-        new Thread(() -> {
+    public void RefreshShelters(int limit, LocationManager locManager) {
+        checkPermission(() -> {
             handler.post(() -> {
                 recyclerView.setVisibility(View.INVISIBLE);
                 loading.setVisibility(View.VISIBLE);
             });
-            List<Shelter> data = manager.getClosestShelters(lat, lng, limit);
 
-            adapter.clearData();
-            adapter.addData(data);
+            locManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, loc -> {
+                double lat = loc.getLatitude();
+                double lng = loc.getLongitude();
 
-            handler.post(() -> {
-                recyclerView.setVisibility(View.VISIBLE);
-                loading.setVisibility(View.INVISIBLE);
-                adapter.notifyDataSetChanged();
-            });
-        }).start();
+                List<Shelter> data = manager.getClosestShelters(lat, lng, limit);
+
+                adapter.clearData();
+                adapter.addData(data);
+
+                handler.post(() -> {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    loading.setVisibility(View.INVISIBLE);
+                    adapter.notifyDataSetChanged();
+                });
+            }, null);
+        });
+    }
+
+    private void checkPermission(Runnable r) {
+        TedPermission.create()
+                .setPermissionListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        r.run();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(List<String> deniedPermissions) {
+                        Toast.makeText(getActivity(), "권한 거부됨.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setDeniedMessage("권한 거부됨.")
+                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                .check();
     }
 }

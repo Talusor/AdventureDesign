@@ -26,6 +26,9 @@ import android.widget.Toast;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 
@@ -37,6 +40,8 @@ import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterFragment;
 
 public class MainActivity extends AppCompatActivity {
     Manager manager = Manager.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     FragmentManager fm;
     ShelterFragment shelterFragment;
@@ -52,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        if (mAuth.getCurrentUser() == null) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
@@ -67,17 +72,15 @@ public class MainActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.topAppBar);
         drawerLayout = findViewById(R.id.rootLayout);
         navView = findViewById(R.id.nav_view);
-        ((TextView)navView.getHeaderView(0).findViewById(R.id.headerID)).setText("");
 
         toolbar.setNavigationOnClickListener(v -> {
             drawerLayout.openDrawer(navView);
         });
 
         navView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId())
-            {
+            switch (item.getItemId()) {
                 case R.id.logout:
-                    FirebaseAuth.getInstance().signOut();
+                    mAuth.signOut();
                     Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
                     finish();
@@ -99,6 +102,15 @@ public class MainActivity extends AppCompatActivity {
         historyButton.setOnClickListener(v -> btnClick2());
         startButton.setOnClickListener(v -> btnClick3());
         updateButton();
+
+        db.collection("user").document(mAuth.getUid()).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        new Handler().post(() -> {
+                            ((TextView) navView.getHeaderView(0).findViewById(R.id.headerID)).setText(task.getResult().get("name").toString());
+                        });
+                    }
+                });
     }
 
     @Override
@@ -138,15 +150,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void btnClick() {
         ChangeView(0);
-        checkPermission(() -> {
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (loc != null) {
-                double lat = loc.getLatitude();
-                double lng = loc.getLongitude();
-                shelterFragment.RefreshShelters(lat, lng, 10);
-            }
-        });
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        shelterFragment.RefreshShelters(10, locationManager);
     }
 
     public void btnClick2() {
