@@ -68,8 +68,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         public void setData(History data) {
             DateText.setText(String.format(
                     "%02d월 %02d일",
-                    data.getDate().getMonth(),
-                    data.getDate().getDay()
+                    data.getDate().getMonth() + 1,
+                    data.getDate().getDate()
             ));
 
             DetectText.setText(String.format(
