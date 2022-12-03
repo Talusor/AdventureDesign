@@ -33,6 +33,8 @@ public class Manager {
     private List<Shelter> shelters = new ArrayList<>();
     private HistoryDBHelper historyDbHelper;
 
+    private final Settings settings = new Settings();
+
     private Date startDate, endDate;
 
     public static Manager getInstance() {
@@ -50,6 +52,8 @@ public class Manager {
         Log.d(TAG, "Stop");
         endDate = new Date();
     }
+
+    public synchronized Settings getSettings() { return settings; }
 
     public synchronized Date getStartDate() {
         return startDate;
