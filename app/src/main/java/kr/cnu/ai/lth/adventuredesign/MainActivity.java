@@ -23,8 +23,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Objects;
-
 import kr.cnu.ai.lth.adventuredesign.History.HistoryFragment;
 import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterFragment;
 
@@ -89,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                     break;
                 case R.id.setting:
+                    intent = new Intent(this, SettingActivity.class);
+                    startActivity(intent);
                     break;
             }
 
