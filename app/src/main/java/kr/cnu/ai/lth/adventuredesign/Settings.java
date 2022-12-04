@@ -5,13 +5,14 @@ enum VentType { NO_SOUND, WITH_SOUND, WITH_TTS }
 public class Settings {
     private String mVentMsg;
     private VentType mVentType;
+    private int mVentTime = 1;
 
     private int mAlarmUri;
     private int mAlarmVolume;
 
     public Settings() {
         mVentMsg = "%N분마다 환기를 권장합니다.";
-        mVentType = VentType.WITH_SOUND;
+        mVentType = VentType.WITH_TTS;
         mAlarmUri = R.raw.shelter;
         mAlarmVolume = 100;
     }
@@ -21,6 +22,10 @@ public class Settings {
             return false;
         mVentMsg = msg;
         return true;
+    }
+
+    public int getVentTime() {
+        return mVentTime;
     }
 
     public synchronized void setVentType(VentType type) {

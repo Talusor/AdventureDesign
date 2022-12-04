@@ -10,10 +10,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.camera2.CaptureRequest;
 import android.media.Image;
+import android.os.Handler;
 import android.os.IBinder;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.util.Range;
 import android.util.Size;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.camera.camera2.Camera2Config;
@@ -33,9 +36,17 @@ import com.google.mlkit.vision.facemesh.FaceMeshDetection;
 import com.google.mlkit.vision.facemesh.FaceMeshDetector;
 import com.google.mlkit.vision.facemesh.FaceMeshDetectorOptions;
 
+import org.w3c.dom.Text;
+
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class DuringDrive extends LifecycleService {
+    private Thread background;
+    private Handler handler;
+    private TextToSpeech tts;
+    private Manager manager = Manager.getInstance();
+
     public DuringDrive() {
     }
 
@@ -59,17 +70,17 @@ public class DuringDrive extends LifecycleService {
             PendingIntent pendingIntent
                     = PendingIntent.getActivity(this, 0, testIntent, PendingIntent.FLAG_IMMUTABLE);
 
-            NotificationManager manager = getBaseContext().getSystemService(NotificationManager.class);
+            NotificationManager notimanager = getBaseContext().getSystemService(NotificationManager.class);
 
             NotificationChannel serviceChannel = new NotificationChannel(
-                    Manager.getInstance().ChannelID,
+                    manager.ChannelID,
                     "Detector",
                     NotificationManager.IMPORTANCE_DEFAULT
             );
-            manager.createNotificationChannel(serviceChannel);
+            notimanager.createNotificationChannel(serviceChannel);
 
             Notification notification =
-                    new Notification.Builder(this, Manager.getInstance().ChannelID)
+                    new Notification.Builder(this, manager.ChannelID)
                             .setContentTitle("Don't Sleep!")
                             .setContentText("운전자의 졸음을 감지하는 중입니다.")
                             .setSmallIcon(R.drawable.ic_letter_p)
@@ -104,7 +115,7 @@ public class DuringDrive extends LifecycleService {
                                     InputImage.fromMediaImage(mediaImage, image.getImageInfo().getRotationDegrees());
                             detector.process(inputimage)
                                     .addOnSuccessListener(faces -> {
-                                        Log.d(Manager.getInstance().TAG, "Detect: " + faces.size());
+                                        //Log.d(Manager.getInstance().TAG, "Detect: " + faces.size());
                                         if (!faces.isEmpty())
                                             FaceManager.getInstance().ProcessData(faces.get(0));
                                         mediaImage.close();
@@ -124,6 +135,47 @@ public class DuringDrive extends LifecycleService {
                 }
             }, ContextCompat.getMainExecutor(this));
 
+            handler = new Handler();
+
+            tts = new TextToSpeech(this, status -> {
+                if (status != TextToSpeech.ERROR) {
+                    int result = tts.setLanguage(Locale.KOREAN);
+                    if (result == TextToSpeech.LANG_MISSING_DATA) {
+                        Log.d(manager.TAG, "TTS KOREAN MISSING");
+                        tts.setLanguage(Locale.ENGLISH);
+                    }
+                    Log.d(manager.TAG, "TTS INIT");
+                } else {
+                    Log.d(manager.TAG, "TTS INIT FAIL");
+                }
+            });
+
+            background = new Thread(() -> {
+                while (true) {
+                    try {
+                        Thread.sleep(1000 * 60 * Manager.getInstance().getSettings().getVentTime());
+                    } catch (Exception ignored) {
+                        return;
+                    }
+                    handler.post(() -> {
+                                String Msg = manager.getSettings().getVentMsg()
+                                        .replace("%N", String.valueOf(Manager.getInstance().getSettings().getVentTime()));
+                                Toast.makeText(this,
+                                                Msg,
+                                                Toast.LENGTH_LONG)
+                                        .show();
+
+                                if (manager.getSettings().getVentType() == VentType.WITH_TTS) {
+                                    tts.setPitch(1);
+                                    tts.setSpeechRate(1);
+                                    tts.speak(Msg, TextToSpeech.QUEUE_FLUSH, null, "DONTSLEEP");
+                                }
+                            }
+                    );
+                }
+            });
+            background.start();
+
             startForeground(1, notification);
         }
 
@@ -132,6 +184,9 @@ public class DuringDrive extends LifecycleService {
 
     private void stopService() {
         Manager.getInstance().stopService();
+        background.interrupt();
+        tts.stop();
+        tts.shutdown();
         stopForeground(true);
         stopSelf();
     }
