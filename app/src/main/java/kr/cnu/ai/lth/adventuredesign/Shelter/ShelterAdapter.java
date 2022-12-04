@@ -70,7 +70,7 @@ public class ShelterAdapter extends RecyclerView.Adapter<ShelterAdapter.ShelterV
             ParkingText = view.findViewById(R.id.parkingText);
             ToiletText = view.findViewById(R.id.toiletText);
 
-            view.setOnClickListener(v -> {
+            view.findViewById(R.id.shelterCard).setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null)
                     listener.onItemClick(this, view, position);
