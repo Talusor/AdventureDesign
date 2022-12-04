@@ -33,6 +33,9 @@ public class LoginActivity extends AppCompatActivity {
 
         TextView forgetPass = findViewById(R.id.forgetPassword);
         forgetPass.setPaintFlags(forgetPass.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        forgetPass.setOnClickListener(v -> {
+            Toast.makeText(this, "해당 기능은 아직 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
+        });
         mAuth = FirebaseAuth.getInstance();
 
         if (mAuth.getCurrentUser() != null) {

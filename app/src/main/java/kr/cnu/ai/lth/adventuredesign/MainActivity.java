@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
@@ -81,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
                     drawerLayout.closeDrawer(navView);
                     break;
                 case R.id.logout:
+                    if (manager.isDriveServiceRunning(this, DuringDrive.class)) {
+                        Toast.makeText(this, "먼저 운전을 종료해 주세요.", Toast.LENGTH_SHORT).show();
+                        break;
+                    }
                     mAuth.signOut();
                     Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
@@ -116,6 +121,12 @@ public class MainActivity extends AppCompatActivity {
                         new Handler().post(() -> {
                             if (task.getResult().get("name") != null) {
                                 ((TextView) navView.getHeaderView(0).findViewById(R.id.headerID)).setText(task.getResult().get("name").toString());
+                            } else {
+                                Toast.makeText(this, "계정에 문제가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                mAuth.signOut();
+                                Intent intent = new Intent(this, LoginActivity.class);
+                                startActivity(intent);
+                                finish();
                             }
                         });
                     }
