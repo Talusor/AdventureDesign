@@ -6,11 +6,14 @@
     android:padding="32dp">
 
     <TextView
+        android:gravity="center_vertical"
         android:id="@+id/headerID"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:autoSizeTextType="uniform"
         android:text="User ID"
+        android:layout_marginRight="32dp"
+        android:maxLines="1"
         />
 
 </LinearLayout>

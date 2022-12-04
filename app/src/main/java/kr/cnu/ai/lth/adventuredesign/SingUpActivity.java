@@ -47,6 +47,12 @@ public class SingUpActivity extends AppCompatActivity {
             return;
         }
 
+        if (name.length() > 10) {
+            nameText.requestFocus();
+            Toast.makeText(this, "유저 이름은 10자 미만이여야 합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (email.isEmpty()) {
             emailText.requestFocus();
             Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -74,6 +80,12 @@ public class SingUpActivity extends AppCompatActivity {
         if (password.length() < 5) {
             passwordText.requestFocus();
             Toast.makeText(this, "비밀번호는 6자 이상이어야 합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!password.equals(passwordConfirm)) {
+            passwordConfirmText.requestFocus();
+            Toast.makeText(this, "비밀번호를 확인해주세요.", Toast.LENGTH_SHORT).show();
             return;
         }
 
