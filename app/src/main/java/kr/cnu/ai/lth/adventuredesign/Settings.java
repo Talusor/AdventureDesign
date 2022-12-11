@@ -4,7 +4,7 @@ import java.net.URLEncoder;
 
 enum VentType {NO_SOUND, WITH_SOUND, WITH_TTS}
 
-enum NaviType { NAVER, KAKAO, TMAP, NONE }
+enum NaviType {NAVER, KAKAO, TMAP, NONE}
 
 public class Settings {
     private String mVentMsg;
@@ -20,7 +20,7 @@ public class Settings {
         mVentType = VentType.WITH_TTS;
         mAlarmUri = R.raw.shelter;
         mAlarmVolume = 100;
-        mNaviType = NaviType.KAKAO;
+        mNaviType = NaviType.TMAP;
     }
 
     public synchronized boolean setVentMsg(String msg) {
@@ -84,6 +84,7 @@ public class Settings {
                     result = "kakaomap://route?ep=" + lat + "," + lng + "&by=CAR";
                     break;
                 case TMAP:
+                    result = "tmap://route?goalname=" + URLEncoder.encode(name, "UTF-8") + "&goalx=" + lng + "&goaly=" + lat;
                     break;
                 default:
                     return null;
