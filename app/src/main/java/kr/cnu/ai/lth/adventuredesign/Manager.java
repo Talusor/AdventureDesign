@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.net.Uri;
 import android.util.Log;
 
 import java.io.File;
@@ -128,5 +132,15 @@ public class Manager {
 
     public synchronized long insertHistory(int detectCnt, long duration) {
         return historyDbHelper.insertHistory(detectCnt, duration);
+    }
+
+    public synchronized boolean checkNavi(Context context) {
+        String url = settings.getUrlScheme(0, 0, "");
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+
+        List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list != null && !list.isEmpty();
     }
 }

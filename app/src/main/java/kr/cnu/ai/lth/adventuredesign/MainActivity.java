@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +28,7 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 
 import java.util.List;
+import java.util.Map;
 
 import kr.cnu.ai.lth.adventuredesign.History.HistoryFragment;
 import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterFragment;
@@ -63,6 +65,11 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(manager.TAG, e.getMessage());
         }
+
+        SharedPreferences perf = getSharedPreferences("setting", MODE_PRIVATE);
+        manager.getSettings().setAlarmVolume(perf.getInt("vol", 100));
+        manager.getSettings().setVentType(VentType.valueOf(perf.getString("ventType", "NO_SOUND")));
+        manager.getSettings().setNaviType(NaviType.valueOf(perf.getString("naviType", "NONE")));
 
         MaterialToolbar toolbar = findViewById(R.id.topAppBar);
         drawerLayout = findViewById(R.id.rootLayout);

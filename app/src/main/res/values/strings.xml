@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">AdventureDesign</string>
+
+    <string-array name="navi_list">
+        <item>네이버맵</item>
+        <item>카카오맵</item>
+        <item>TMAP</item>
+    </string-array>
 </resources>

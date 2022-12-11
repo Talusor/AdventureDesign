@@ -92,6 +92,7 @@
                 android:layout_height="16dp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/alarmVolume"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:background="?attr/selectableItemBackground"
@@ -142,6 +143,7 @@
                 android:layout_height="16dp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ventSetting"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:background="?attr/selectableItemBackground"
@@ -200,6 +202,57 @@
                     android:gravity="top"
                     android:maxLines="1"
                     android:text="%N분마다 환기를 권장합니다."
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+        </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:alpha="0.25" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/naviSetting"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:gravity="bottom"
+                    android:text="네비게이션 어플 설정"
+                    android:textSize="20sp"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/naviSettingText"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:alpha="0.8"
+                    android:gravity="top"
+                    android:text="NONE"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent" />
 
