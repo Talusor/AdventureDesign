@@ -9,6 +9,7 @@ import com.google.mlkit.vision.facemesh.FaceMeshPoint;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class FaceManager {
     private static FaceManager manager;
@@ -35,7 +36,7 @@ public class FaceManager {
     List<Double> rawHistoryLE = new ArrayList<>();
     List<Double> rawHistoryRE = new ArrayList<>();
 
-    Runnable detectEyeClose = null;
+    Consumer<Boolean> detectEyeClose = null;
 
     private double rawM = -1, rawLE = -1, rawRE = -1;
     private double LEAvg, REAvg;
@@ -49,7 +50,7 @@ public class FaceManager {
         return manager;
     }
 
-    public synchronized void StartDetect(Runnable callback) {
+    public synchronized void StartDetect(Consumer<Boolean> callback) {
         detectEyeClose = callback;
         LEAvg = -1;
         REAvg = -1;
@@ -88,7 +89,10 @@ public class FaceManager {
         if (LEAvg != -1) {
             if (rawLE <= LEAvg / 2.5 && rawRE <= REAvg / 2.5) {
                 if (detectEyeClose != null)
-                    detectEyeClose.run();
+                    detectEyeClose.accept(true);
+            } else {
+                if (detectEyeClose != null)
+                    detectEyeClose.accept(false);
             }
         }
 
