@@ -7,10 +7,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.gun0912.tedpermission.normal.TedPermission;
 
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import kr.cnu.ai.lth.adventuredesign.Manager;
 import kr.cnu.ai.lth.adventuredesign.R;
@@ -83,21 +86,41 @@ public class ShelterFragment extends Fragment {
                 loading.setVisibility(View.VISIBLE);
             });
 
-            locManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, loc -> {
-                double lat = loc.getLatitude();
-                double lng = loc.getLongitude();
+            Location last = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (last != null) {
+                if (TimeUnit.NANOSECONDS.toMillis(SystemClock.elapsedRealtimeNanos()
+                        - last.getElapsedRealtimeNanos()) >= 5000) {
+                    locManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, loc -> {
+                        double lat = loc.getLatitude();
+                        double lng = loc.getLongitude();
 
-                List<Shelter> data = manager.getClosestShelters(lat, lng, limit);
+                        List<Shelter> data = manager.getClosestShelters(lat, lng, limit);
 
-                adapter.clearData();
-                adapter.addData(data);
+                        adapter.clearData();
+                        adapter.addData(data);
 
-                handler.post(() -> {
-                    recyclerView.setVisibility(View.VISIBLE);
-                    loading.setVisibility(View.INVISIBLE);
-                    adapter.notifyDataSetChanged();
-                });
-            }, null);
+                        handler.post(() -> {
+                            recyclerView.setVisibility(View.VISIBLE);
+                            loading.setVisibility(View.INVISIBLE);
+                            adapter.notifyDataSetChanged();
+                        });
+                    }, null);
+                } else {
+                    double lat = last.getLatitude();
+                    double lng = last.getLongitude();
+
+                    List<Shelter> data = manager.getClosestShelters(lat, lng, limit);
+
+                    adapter.clearData();
+                    adapter.addData(data);
+
+                    handler.post(() -> {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        loading.setVisibility(View.INVISIBLE);
+                        adapter.notifyDataSetChanged();
+                    });
+                }
+            }
         });
     }
 
@@ -111,10 +134,10 @@ public class ShelterFragment extends Fragment {
 
                     @Override
                     public void onPermissionDenied(List<String> deniedPermissions) {
-                        Toast.makeText(getActivity(), "권한 거부됨.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "GPS 권한이 거부되었습니다. 기능을 사용하기 위해 권한을 허용해주세요.", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setDeniedMessage("권한 거부됨.")
+                .setDeniedMessage("GPS 권한 거부시 졸음쉼터 검색 기능을 사용할 수 없습니다.")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check();
     }
