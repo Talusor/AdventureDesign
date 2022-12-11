@@ -11,6 +11,7 @@ public class Settings {
     private VentType mVentType;
     private NaviType mNaviType;
     private int mVentTime = 30;
+    private int mShelterLimit = 10;
 
     private int mAlarmUri;
     private int mAlarmVolume;
@@ -50,12 +51,20 @@ public class Settings {
         mNaviType = type;
     }
 
+    public synchronized void setShelterLimit(int limit) {
+        mShelterLimit = limit;
+    }
+
     public synchronized String getVentMsg() {
         return mVentMsg;
     }
 
     public synchronized VentType getVentType() {
         return mVentType;
+    }
+
+    public synchronized int getShelterLimit() {
+        return mShelterLimit;
     }
 
     public synchronized int getAlarmId() {

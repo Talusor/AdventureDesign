@@ -31,12 +31,14 @@ public class SettingActivity extends AppCompatActivity {
         TextView ventMsgText = findViewById(R.id.ventMessageText);
         TextView ventText = findViewById(R.id.ventSettingText);
         TextView naviText = findViewById(R.id.naviSettingText);
+        TextView shelterText = findViewById(R.id.shelterSettingText);
 
         //alarmText.setText(getResources().getResourceName(settings.getAlarmId()));
         alarmVolText.setText(String.valueOf(settings.getAlarmVolume()));
         ventMsgText.setText(settings.getVentMsg());
         ventText.setText(settings.getVentType().name());
         naviText.setText(settings.getNaviType().name());
+        shelterText.setText(String.valueOf(settings.getShelterLimit()));
 
         findViewById(R.id.naviSetting).setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -84,6 +86,25 @@ public class SettingActivity extends AppCompatActivity {
             builder.create().show();
         });
 
+        findViewById(R.id.shelterSetting).setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final View view = this.getLayoutInflater().inflate(R.layout.dialog_number_picker, null);
+            builder.setView(view);
+            builder.setTitle("표시 개수를 설정해주세요.");
+            final NumberPicker picker = (NumberPicker) view.findViewById(R.id.picker);
+            picker.setMinValue(5);
+            picker.setMaxValue(50);
+            picker.setValue(settings.getShelterLimit());
+            builder.setPositiveButton("확인", (d, id) -> {
+                        Toast.makeText(this, String.format("표시 개수를 %d개로 설정하였습니다.", picker.getValue()), Toast.LENGTH_SHORT).show();
+                        settings.setShelterLimit(picker.getValue());
+
+                        shelterText.setText(String.valueOf(settings.getShelterLimit()));
+                    })
+                    .setNegativeButton("취소", null);
+            builder.create().show();
+        });
+
         findViewById(R.id.ventSetting).setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -114,6 +135,7 @@ public class SettingActivity extends AppCompatActivity {
         editor.putString("ventType", settings.getVentType().name());
         editor.putString("naviType", settings.getNaviType().name());
         editor.putInt("vol", settings.getAlarmVolume());
+        editor.putInt("shelterLimit", settings.getShelterLimit());
         editor.apply();
     }
 }

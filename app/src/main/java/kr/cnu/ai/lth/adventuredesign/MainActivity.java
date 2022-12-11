@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         manager.getSettings().setAlarmVolume(perf.getInt("vol", 100));
         manager.getSettings().setVentType(VentType.valueOf(perf.getString("ventType", "NO_SOUND")));
         manager.getSettings().setNaviType(NaviType.valueOf(perf.getString("naviType", "NONE")));
+        manager.getSettings().setShelterLimit(perf.getInt("shelterLimit", 10));
 
         MaterialToolbar toolbar = findViewById(R.id.topAppBar);
         drawerLayout = findViewById(R.id.rootLayout);
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
     public void viewShelterList() {
         ChangeView(0);
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        shelterFragment.RefreshShelters(10, locationManager);
+        shelterFragment.RefreshShelters(manager.getSettings().getShelterLimit(), locationManager);
     }
 
     public void viewHistoryList() {
