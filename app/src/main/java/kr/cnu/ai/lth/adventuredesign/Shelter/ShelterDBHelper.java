@@ -1,4 +1,4 @@
-package kr.cnu.ai.lth.adventuredesign;
+package kr.cnu.ai.lth.adventuredesign.Shelter;
 
 import android.content.Context;
 import android.database.Cursor;
