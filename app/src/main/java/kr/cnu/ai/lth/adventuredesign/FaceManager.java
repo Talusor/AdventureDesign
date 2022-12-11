@@ -32,7 +32,13 @@ public class FaceManager {
     List<PointF3D> leftEyePoints = new ArrayList<>(leftEyeIndexes.length);
     List<PointF3D> rightEyePoints = new ArrayList<>(rightEyeIndexes.length);
 
-    private double rawM, rawLE, rawRE;
+    List<Double> rawHistoryLE = new ArrayList<>();
+    List<Double> rawHistoryRE = new ArrayList<>();
+
+    Runnable detectEyeClose = null;
+
+    private double rawM = -1, rawLE = -1, rawRE = -1;
+    private double LEAvg, REAvg;
 
     private FaceManager() {
     }
@@ -41,6 +47,16 @@ public class FaceManager {
         if (manager == null)
             manager = new FaceManager();
         return manager;
+    }
+
+    public synchronized void StartDetect(Runnable callback) {
+        detectEyeClose = callback;
+        LEAvg = -1;
+        REAvg = -1;
+    }
+
+    public synchronized void StopDetect() {
+        detectEyeClose = null;
     }
 
     public synchronized void ProcessData(FaceMesh mesh) {
@@ -60,9 +76,46 @@ public class FaceManager {
             }
         }
 
-        Log.d("[ADV]", "Mouse size : " + getSizeOfPoints(mousePoints));
-        Log.d("[ADV]", "Left Eye size : " + getSizeOfPoints(leftEyePoints));
-        Log.d("[ADV]", "Right Eye size : " + getSizeOfPoints(rightEyePoints));
+        double tempLE = getSizeOfPoints(leftEyePoints);
+        double tempRE = getSizeOfPoints(rightEyePoints);
+        rawM = getSizeOfPoints(mousePoints);
+        rawLE = tempLE;
+        rawRE = tempRE;
+
+        rawHistoryLE.add(rawLE);
+        rawHistoryRE.add(rawRE);
+
+        if (LEAvg != -1) {
+            if (rawLE <= LEAvg / 2.5 && rawRE <= REAvg / 2.5) {
+                if (detectEyeClose != null)
+                    detectEyeClose.run();
+            }
+        }
+
+        if (LEAvg == -1 && rawHistoryLE.size() > 40) {
+            LEAvg = 0;
+            REAvg = 0;
+            for (int i = 20; i < 40; i++) {
+                LEAvg += rawHistoryLE.get(i);
+                REAvg += rawHistoryRE.get(i);
+            }
+            LEAvg /= 20.0;
+            REAvg /= 20.0;
+
+            Log.d("[ADV]", String.format("LE: %.2f, RE: %.2f", LEAvg, REAvg));
+        }
+    }
+
+    public synchronized double getMouseSize() {
+        return rawM;
+    }
+
+    public synchronized double getLeftEyeSize() {
+        return rawLE;
+    }
+
+    public synchronized double getRightEyeSize() {
+        return rawRE;
     }
 
     private boolean isInArr(int i, int[] arr) {
