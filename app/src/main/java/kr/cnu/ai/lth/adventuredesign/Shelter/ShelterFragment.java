@@ -56,11 +56,7 @@ public class ShelterFragment extends Fragment {
             try {
                 Shelter data = adapter.getData(position);
                 Log.d(manager.TAG, String.format("Clicked (%d), %s", position, data.getName()));
-                String url =
-                        "nmap://navigation?dlat=" + data.getLat() +
-                                "&dlng=" + data.getLng() +
-                                "&dname=" + URLEncoder.encode(data.getName() + " 졸음 쉼터", "UTF-8") +
-                                "&appname=testApp";
+                String url = manager.getSettings().getUrlScheme(data.getLat(), data.getLng(), data.getName() + " 졸음 쉼터");
 
                 Log.d(manager.TAG, url);
 
@@ -120,6 +116,26 @@ public class ShelterFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                     });
                 }
+            } else {
+                locManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, loc -> {
+                    double lat = loc.getLatitude();
+                    double lng = loc.getLongitude();
+
+                    List<Shelter> data = manager.getClosestShelters(lat, lng, limit);
+
+                    adapter.clearData();
+                    adapter.addData(data);
+
+                    handler.post(() -> {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        loading.setVisibility(View.INVISIBLE);
+                        adapter.notifyDataSetChanged();
+                    });
+                }, null);
+
+                locManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, loc -> {
+
+                }, null);
             }
         });
     }
