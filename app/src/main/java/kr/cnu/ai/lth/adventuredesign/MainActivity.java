@@ -23,6 +23,10 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.normal.TedPermission;
+
+import java.util.List;
 
 import kr.cnu.ai.lth.adventuredesign.History.HistoryFragment;
 import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterFragment;
@@ -46,15 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.CAMERA},
-                10);
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                11);
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.RECORD_AUDIO},
-                12);
+        checkPermissions();
 
         if (mAuth.getCurrentUser() == null) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -196,5 +192,39 @@ public class MainActivity extends AppCompatActivity {
                 ft.replace(R.id.frameView, shelterFragment).commitNowAllowingStateLoss();
                 break;
         }
+    }
+
+    private void checkPermissions() {
+        TedPermission.create()
+                .setPermissionListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+
+                    }
+
+                    @Override
+                    public void onPermissionDenied(List<String> deniedPermissions) {
+                        Toast.makeText(getApplicationContext(), "GPS 권한이 거부되었습니다. 기능을 사용하기 위해 권한을 허용해주세요.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setDeniedMessage("GPS 권한 거부시 졸음쉼터 검색 기능을 사용할 수 없습니다.")
+                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                .check();
+
+        TedPermission.create()
+                .setPermissionListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+
+                    }
+
+                    @Override
+                    public void onPermissionDenied(List<String> deniedPermissions) {
+                        Toast.makeText(getApplicationContext(), "카메라 권한이 거부되었습니다. 기능을 사용하기 위해 권한을 허용해주세요.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setDeniedMessage("카메라 권한 거부시 졸음 감지 기능을 사용할 수 없습니다.")
+                .setPermissions(Manifest.permission.CAMERA)
+                .check();
     }
 }
