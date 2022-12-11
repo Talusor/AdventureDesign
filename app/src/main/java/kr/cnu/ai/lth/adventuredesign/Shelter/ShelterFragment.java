@@ -60,9 +60,11 @@ public class ShelterFragment extends Fragment {
 
                 Log.d(manager.TAG, url);
 
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                getContext().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                if (url != null) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                    getContext().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                }
             } catch (Exception ignored) {
             }
         });
