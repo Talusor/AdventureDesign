@@ -168,23 +168,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, DuringDrive.class);
         if (startButton.getText().toString().equals("운전 종료")) {
             intent.setAction("STOP");
-            startForegroundService(intent);
-
-            new Thread(() -> {
-                try {
-                    while (manager.isDriveServiceRunning(this, DuringDrive.class)) {
-                        Thread.sleep(100);
-                    }
-                } catch (Exception ignored) {
-                }
-                Log.d(manager.TAG, "Started Date : " + manager.getStartDate().toString());
-                Log.d(manager.TAG, "End Date : " + manager.getEndDate().toString());
-
-                manager.insertHistory(0, (manager.getEndDate().getTime() - manager.getStartDate().getTime()) / 1000);
-            }).start();
-        } else {
-            startForegroundService(intent);
         }
+        startForegroundService(intent);
         new Handler().postDelayed(this::updateButton, 250);
     }
 

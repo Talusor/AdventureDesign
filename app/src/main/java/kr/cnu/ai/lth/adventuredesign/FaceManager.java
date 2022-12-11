@@ -7,8 +7,8 @@ import com.google.mlkit.vision.facemesh.FaceMesh;
 import com.google.mlkit.vision.facemesh.FaceMeshPoint;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.function.Consumer;
 
 public class FaceManager {
@@ -58,6 +58,8 @@ public class FaceManager {
 
     public synchronized void StopDetect() {
         detectEyeClose = null;
+        rawHistoryLE.clear();
+        rawHistoryRE.clear();
     }
 
     public synchronized void ProcessData(FaceMesh mesh) {
@@ -77,17 +79,33 @@ public class FaceManager {
             }
         }
 
-        double tempLE = getSizeOfPoints(leftEyePoints);
-        double tempRE = getSizeOfPoints(rightEyePoints);
+        rawLE = getSizeOfPoints(leftEyePoints);
+        rawRE = getSizeOfPoints(rightEyePoints);
         rawM = getSizeOfPoints(mousePoints);
-        rawLE = tempLE;
-        rawRE = tempRE;
 
         rawHistoryLE.add(rawLE);
         rawHistoryRE.add(rawRE);
 
-        if (LEAvg != -1) {
-            if (rawLE <= LEAvg / 2.5 && rawRE <= REAvg / 2.5) {
+        int sizeLE = rawHistoryLE.size();
+        int sizeRE = rawHistoryRE.size();
+
+        if (LEAvg != -1 && sizeLE > 5) {
+            ListIterator<Double> ile = rawHistoryLE.listIterator(sizeLE);
+            double ma3le = 0;
+            while (ile.previousIndex() != sizeLE - 4)
+                ma3le += ile.previous();
+            ma3le /= 3.0;
+
+
+            ListIterator<Double> ire = rawHistoryRE.listIterator(sizeRE);
+            double ma3re = 0;
+            while (ire.previousIndex() != sizeRE - 4)
+                ma3re += ire.previous();
+            ma3re /= 3.0;
+
+            //Log.d("[ADV]", String.format("LE: %.1f, %.1f / RE: %.1f, %.1f", ma3le, LEAvg, ma3re, REAvg));
+
+            if (ma3le <= LEAvg / 2.15 && ma3re <= REAvg / 2.15) {
                 if (detectEyeClose != null)
                     detectEyeClose.accept(true);
             } else {
@@ -96,17 +114,17 @@ public class FaceManager {
             }
         }
 
-        if (LEAvg == -1 && rawHistoryLE.size() > 40) {
+        if (LEAvg == -1 && sizeRE > 60) {
             LEAvg = 0;
             REAvg = 0;
-            for (int i = 20; i < 40; i++) {
+            for (int i = 30; i < 60; i++) {
                 LEAvg += rawHistoryLE.get(i);
                 REAvg += rawHistoryRE.get(i);
             }
-            LEAvg /= 20.0;
-            REAvg /= 20.0;
+            LEAvg /= 30.0;
+            REAvg /= 30.0;
 
-            Log.d("[ADV]", String.format("LE: %.2f, RE: %.2f", LEAvg, REAvg));
+            Log.d("[ADV]", String.format("AVG LE: %.2f, AVG RE: %.2f", LEAvg, REAvg));
         }
     }
 

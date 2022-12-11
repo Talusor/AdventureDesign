@@ -1,13 +1,10 @@
 package kr.cnu.ai.lth.adventuredesign;
 
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.pm.ServiceInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -21,8 +18,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import kr.cnu.ai.lth.adventuredesign.History.History;
-import kr.cnu.ai.lth.adventuredesign.History.HistoryFragment;
+import kr.cnu.ai.lth.adventuredesign.History.HistoryDBHelper;
 import kr.cnu.ai.lth.adventuredesign.Shelter.Shelter;
+import kr.cnu.ai.lth.adventuredesign.Shelter.ShelterDBHelper;
 
 public class Manager {
     public final String TAG = "[ADV]";
@@ -39,33 +37,13 @@ public class Manager {
 
     private final Settings settings = new Settings();
 
-    private Date startDate, endDate;
-
     public static Manager getInstance() {
         if (manager == null)
             manager = new Manager();
         return manager;
     }
 
-    public synchronized void startService() {
-        Log.d(TAG, "Start");
-        startDate = new Date();
-    }
-
-    public synchronized void stopService() {
-        Log.d(TAG, "Stop");
-        endDate = new Date();
-    }
-
     public synchronized Settings getSettings() { return settings; }
-
-    public synchronized Date getStartDate() {
-        return startDate;
-    }
-
-    public synchronized Date getEndDate() {
-        return endDate;
-    }
 
     public synchronized boolean isDriveServiceRunning(Context context, Class<?> cls) {
         try {

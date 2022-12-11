@@ -30,7 +30,13 @@ import com.google.mlkit.vision.facemesh.FaceMeshDetection;
 import com.google.mlkit.vision.facemesh.FaceMeshDetector;
 import com.google.mlkit.vision.facemesh.FaceMeshDetectorOptions;
 
+import java.util.Date;
 import java.util.concurrent.Executors;
+
+class DriveData {
+    public Date startDate, endDate;
+    public int detectCount = 0;
+}
 
 public class DuringDrive extends LifecycleService {
     private Thread background;
@@ -39,6 +45,10 @@ public class DuringDrive extends LifecycleService {
     private final FaceManager faceManager = FaceManager.getInstance();
 
     private MediaPlayer ventAlarm, sleepAlarm;
+
+    private long lastEyeClosed = -1;
+
+    private DriveData data = null;
 
     public DuringDrive() {
     }
@@ -55,7 +65,6 @@ public class DuringDrive extends LifecycleService {
         if (intent != null && intent.getAction() != null && intent.getAction().equals("STOP"))
             stopService();
         else {
-            Manager.getInstance().startService();
             // PendingIntent를 이용하면 포그라운드 서비스 상태에서 알림을 누르면 앱의 MainActivity를 다시 열게 된다.
             Intent testIntent = new Intent(getApplicationContext(), MainActivity.class);
             PendingIntent pendingIntent
@@ -82,12 +91,16 @@ public class DuringDrive extends LifecycleService {
             sleepAlarm.setLooping(false);
             ventAlarm = MediaPlayer.create(this, R.raw.vent_tts);
             ventAlarm.setLooping(false);
+
+            data = new DriveData();
+            data.startDate = new Date();
+
             handler = new Handler();
             background = new Thread(() -> {
                 while (true) {
                     try {
-                        //Thread.sleep(1000L * 60 * Manager.getInstance().getSettings().getVentTime());
-                        Thread.sleep(15000L);
+                        Thread.sleep(1000L * 60 * Manager.getInstance().getSettings().getVentTime());
+                        //Thread.sleep(15000L);
                     } catch (Exception ignored) {
                         return;
                     }
@@ -120,7 +133,30 @@ public class DuringDrive extends LifecycleService {
     }
 
     private void Detector(boolean closed) {
-        Log.d(manager.TAG, "눈 감김");
+        if (closed) {
+            if (lastEyeClosed == -1) {
+                lastEyeClosed = System.currentTimeMillis();
+                Log.d(manager.TAG, "눈 감김 Start " + lastEyeClosed);
+            } else {
+                if (System.currentTimeMillis() - lastEyeClosed >= 2200) {
+                    Log.d(manager.TAG, "눈 감김 Detect");
+                    lastEyeClosed = -1;
+                    if (sleepAlarm != null) {
+                        float vol = manager.getSettings().getAlarmVolume() / 100.f;
+
+                        sleepAlarm.setVolume(vol, vol);
+                        sleepAlarm.seekTo(0);
+                        sleepAlarm.start();
+                    }
+
+                    if (data != null)
+                        data.detectCount++;
+                }
+            }
+        }
+        else {
+            lastEyeClosed = -1;
+        }
     }
 
     @SuppressLint("UnsafeOptInUsageError")
@@ -176,7 +212,6 @@ public class DuringDrive extends LifecycleService {
     }
 
     private void stopService() {
-        manager.stopService();
         faceManager.StopDetect();
         background.interrupt();
         if (sleepAlarm != null) {
@@ -188,6 +223,10 @@ public class DuringDrive extends LifecycleService {
             ventAlarm.stop();
             ventAlarm.release();
             ventAlarm = null;
+        }
+        if (data != null) {
+            data.endDate = new Date();
+            manager.insertHistory(data.detectCount, (data.endDate.getTime() - data.startDate.getTime()) / 1000);
         }
         stopForeground(true);
         stopSelf();
