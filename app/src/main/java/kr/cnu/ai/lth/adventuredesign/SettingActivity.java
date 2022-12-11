@@ -32,7 +32,7 @@ public class SettingActivity extends AppCompatActivity {
         TextView ventText = findViewById(R.id.ventSettingText);
         TextView naviText = findViewById(R.id.naviSettingText);
 
-        alarmText.setText(getResources().getResourceName(settings.getAlarmId()));
+        //alarmText.setText(getResources().getResourceName(settings.getAlarmId()));
         alarmVolText.setText(String.valueOf(settings.getAlarmVolume()));
         ventMsgText.setText(settings.getVentMsg());
         ventText.setText(settings.getVentType().name());
@@ -82,6 +82,25 @@ public class SettingActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("취소", null);
             builder.create().show();
+        });
+
+        findViewById(R.id.ventSetting).setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle("환기 알림 선택");
+
+            builder.setItems(R.array.ventType_list, (d, pos) -> {
+                String item = getResources().getStringArray(R.array.ventType_list)[pos];
+                if (item.equals("알림 없음"))
+                    settings.setVentType(VentType.NO_SOUND);
+                if (item.equals("음성 알림"))
+                    settings.setVentType(VentType.WITH_TTS);
+
+                ventText.setText(settings.getVentType().name());
+            });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         });
     }
 

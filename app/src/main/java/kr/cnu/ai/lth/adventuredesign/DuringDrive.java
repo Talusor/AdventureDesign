@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.hardware.camera2.CaptureRequest;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -36,6 +37,8 @@ public class DuringDrive extends LifecycleService {
     private Handler handler;
     private final Manager manager = Manager.getInstance();
     private final FaceManager faceManager = FaceManager.getInstance();
+
+    private MediaPlayer ventAlarm, sleepAlarm;
 
     public DuringDrive() {
     }
@@ -75,11 +78,16 @@ public class DuringDrive extends LifecycleService {
                             .setContentIntent(pendingIntent)
                             .build();
 
+            sleepAlarm = MediaPlayer.create(this, R.raw.warn_tts);
+            sleepAlarm.setLooping(false);
+            ventAlarm = MediaPlayer.create(this, R.raw.vent_tts);
+            ventAlarm.setLooping(false);
             handler = new Handler();
             background = new Thread(() -> {
                 while (true) {
                     try {
-                        Thread.sleep(1000L * 60 * Manager.getInstance().getSettings().getVentTime());
+                        //Thread.sleep(1000L * 60 * Manager.getInstance().getSettings().getVentTime());
+                        Thread.sleep(15000L);
                     } catch (Exception ignored) {
                         return;
                     }
@@ -90,8 +98,12 @@ public class DuringDrive extends LifecycleService {
                                                 Toast.LENGTH_LONG)
                                         .show();
 
-                                if (manager.getSettings().getVentType() == VentType.WITH_TTS) {
+                                float vol = manager.getSettings().getAlarmVolume() / 100.f;
 
+                                if (manager.getSettings().getVentType() == VentType.WITH_TTS) {
+                                    ventAlarm.setVolume(vol, vol);
+                                    ventAlarm.seekTo(0);
+                                    ventAlarm.start();
                                 }
                             }
                     );
@@ -167,6 +179,16 @@ public class DuringDrive extends LifecycleService {
         manager.stopService();
         faceManager.StopDetect();
         background.interrupt();
+        if (sleepAlarm != null) {
+            sleepAlarm.stop();
+            sleepAlarm.release();
+            sleepAlarm = null;
+        }
+        if (ventAlarm != null) {
+            ventAlarm.stop();
+            ventAlarm.release();
+            ventAlarm = null;
+        }
         stopForeground(true);
         stopSelf();
     }

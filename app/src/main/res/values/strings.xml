@@ -6,4 +6,9 @@
         <item>카카오맵</item>
         <item>TMAP</item>
     </string-array>
+
+    <string-array name="ventType_list">
+        <item>알림 없음</item>
+        <item>음성 알림</item>
+    </string-array>
 </resources>
